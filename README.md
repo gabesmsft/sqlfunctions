@@ -1,0 +1,80 @@
+
+# SQL bindings for Azure Functions
+This sample Azure Resource Manager template deploys an Azure SQL database and Azure Function App. The Azure Function App contains code that will trigger when an item is aded to the database, and also contains input and output bindings to read from and write to the database.
+A storage account for the Function App, an Azure SQL server for the database, and an Application Insights instance for Function App logging will also be deployed. This demo is provided as-is and is not intended for real-life production scenarios.
+
+The Function App contains the following Functions:
+- **SQLTriggerFunction1**: A SQL trigger Function that will execute when an item is added to a table that has change tracking enabled in the SQL database. This Function does not do anything besides log information about the item that was added to the database. The purpose of this Function is merely to demonstrate SQL triggering.
+- **HttpTriggerWriteToSQLOutput**: An HTTP Trigger Function with a route of /api/WriteToSQL that will write an item to the SQL table. The purpose of this Function is to provide a convenient way to add an item to the SQL table and trigger SQLTriggerFunction1, and to demonstrate SQL outbound bindings.
+- **HttpTriggerReadAllFromSQLInput**: An HTTP Trigger Function with a route of /api/ReadAllFromSQL that will print all items from the SQL table. The purpose of this Function is to provide a quick way to verify that HttpTriggerWriteToSQLOutput wrote to the SQL table, and to demonstrate SQL output bindings.
+- **HttpTriggerReadItemFromSQLInput**: An HTTP Trigger Function with a route of /api/ReadItemFromSQL that will print a specified item from the SQL table. The purpose of this Function is to demonstrate customization of the SQL query that is passed into the input binding, and to provide a quick way to verify that HttpTriggerWriteToSQLOutput wrote to the SQL table, and to demonstrate SQL output bindings.
+- **HttpTriggerDeleteAllFromSQLInput**: An HTTP Trigger Function with a route of /api/DeleteAllFromSQL that will delete all items from the SQL table. The purpose of this Function is to provide a convenient way to empty the table after you test the other Functions. This approach is not recommended in a real-world scenario.
+
+[![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fgabesmsft%2Fsqlfunctions%2Fmaster%2Fdeploy%2Fazuredeploy.json)
+
+## Post-deployment preparation
+
+1. Add your IP address to the SQL Server firewall.
+2. In the fakedb1 database, run the following set of commands to add the ToDo table and enable change tracking so that triggering is possible.
+
+
+```
+CREATE TABLE dbo.ToDo (
+    [Id] UNIQUEIDENTIFIER PRIMARY KEY,
+    [order] INT NULL,
+    [title] NVARCHAR(200) NOT NULL,
+    [url] NVARCHAR(200) NOT NULL,
+    [completed] BIT NOT NULL
+);
+
+ALTER DATABASE [fakedb1]
+SET CHANGE_TRACKING = ON
+(CHANGE_RETENTION = 2 DAYS, AUTO_CLEANUP = ON);
+
+ALTER TABLE [dbo].[ToDo]
+ENABLE CHANGE_TRACKING;
+
+```
+
+3. In the fakedb1 database, add the following SPROC, which will delete all data from the table whenever executed.
+```
+-- Not a real-world best-practice
+
+CREATE PROCEDURE [dbo].[DeleteToDo]
+AS
+    BEGIN
+        DELETE FROM dbo.ToDo
+    END
+GO
+```
+
+## Demo
+
+1. Add an item to the table by running the following Function in your browser (replace <YourFunctionAppName> with your Function App name):
+
+```
+https://<YourFunctionAppName>.azurewebsites.net/api/WriteToSQL?title=mytitle1
+```
+
+This should return a json response containing information about the added record. Adding the record should also trigger SQLTriggerFunction1, which we will verify in the logs later.
+
+2. Run the following Function in your browser (replace <YourFunctionAppName> with your Function App name):
+
+```
+https://<YourFunctionAppName>.azurewebsites.net/api/ReadAllFromSQL
+```
+
+This should return a json response containing information about the added record(s), which will verify that the record(s) was/were added to the SQL table.
+
+3. Run steps 1 a few more times, using different values for the title query parameter (e.g. ?title=mytitle2, etc.). Then run step 2 to verify that the records were added to the SQL table.
+
+4. 
+
+5. Optional: note down the ids of one of the records that were added, and then run the following Function to check the record with the specified id in the SQL table:
+https://<YourFunctionAppName>.azurewebsites.net/api/WriteToSQL?id=<replace with record id>
+
+6. Optional: to remove all records from the table and restart with an empty table, run the folowing Function:
+
+```
+https://<YourFunctionAppName>.azurewebsites.net/api/DeleteAllFromSQL
+```
