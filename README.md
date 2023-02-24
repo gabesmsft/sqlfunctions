@@ -1,5 +1,8 @@
 
 # SQL bindings for Azure Functions
+
+[![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fgabesmsft%2Fsqlfunctions%2Fmaster%2Fdeploy%2Fazuredeploy.json)
+
 This sample Azure Resource Manager template deploys an Azure SQL database and Azure Function App. The Azure Function App contains code that will trigger when an item is aded to the database, and also contains input and output bindings to read from and write to the database.
 A storage account for the Function App, an Azure SQL server for the database, and an Application Insights instance for Function App logging will also be deployed. This demo is provided as-is and is not intended for real-life production scenarios.
 
@@ -9,8 +12,6 @@ The Function App contains the following Functions:
 - **HttpTriggerReadAllFromSQLInput**: An HTTP Trigger Function with a route of /api/ReadAllFromSQL that will print all items from the SQL table. The purpose of this Function is to provide a quick way to verify that HttpTriggerWriteToSQLOutput wrote to the SQL table, and to demonstrate SQL output bindings.
 - **HttpTriggerReadItemFromSQLInput**: An HTTP Trigger Function with a route of /api/ReadItemFromSQL that will print a specified item from the SQL table. The purpose of this Function is to demonstrate customization of the SQL query that is passed into the input binding, and to provide a quick way to verify that HttpTriggerWriteToSQLOutput wrote to the SQL table, and to demonstrate SQL output bindings.
 - **HttpTriggerDeleteAllFromSQLInput**: An HTTP Trigger Function with a route of /api/DeleteAllFromSQL that will delete all items from the SQL table. The purpose of this Function is to provide a convenient way to empty the table after you test the other Functions. This approach is not recommended in a real-world scenario.
-
-[![Deploy To Azure](https://raw.githubusercontent.com/Azure/azure-quickstart-templates/master/1-CONTRIBUTION-GUIDE/images/deploytoazure.svg?sanitize=true)](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fgabesmsft%2Fsqlfunctions%2Fmaster%2Fdeploy%2Fazuredeploy.json)
 
 ## Post-deployment preparation
 
