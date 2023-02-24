@@ -17,7 +17,6 @@ The Function App contains the following Functions:
 1. Add your IP address to the SQL Server firewall.
 2. In the fakedb1 database, run the following set of commands to add the ToDo table and enable change tracking so that triggering is possible.
 
-
 ```
 CREATE TABLE dbo.ToDo (
     [Id] UNIQUEIDENTIFIER PRIMARY KEY,
@@ -68,7 +67,23 @@ This should return a json response containing information about the added record
 
 3. Run steps 1 a few more times, using different values for the title query parameter (e.g. ?title=mytitle2, etc.). Then run step 2 to verify that the records were added to the SQL table.
 
-4. 
+4. In Application Insights, verify that the SQLTriggerFunction1 Function executed. It might take a few minutes for the log to appear. You can use the following query to check for Functions activity.
+```
+traces
+| where message startswith "Execut" or message contains "SQL trigger listener" or message contains "queried from database" or  severityLevel >= 3
+| extend InvocationId = customDimensions.InvocationId
+| project timestamp, message, severityLevel, operation_Name, InvocationId, customDimensions, sdkVersion
+| order by timestamp asc
+```
+
+- The operation_Name column contains the Function name. 
+- For each time the Function was triggered, there should be one Executing and one Executed log with the same InvocationId. E.g.:
+```
+Executing 'SQLTriggerFunction' (Reason='New change detected on table '[dbo].[ToDo]' at 2023-02-23T23:19:01.7984777Z.', Id=f01bc3e5-1ee4-4120-a9a7-df9242203716)
+
+Executed 'SQLTriggerFunction' (Succeeded, Id=f01bc3e5-1ee4-4120-a9a7-df9242203716, Duration=1ms)
+```
+
 
 5. Optional: note down the ids of one of the records that were added, and then run the following Function to check the record with the specified id in the SQL table:
 https://<YourFunctionAppName>.azurewebsites.net/api/WriteToSQL?id=<replace with record id>
