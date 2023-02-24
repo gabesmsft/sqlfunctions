@@ -117,13 +117,15 @@
       "name": "[variables('hostingPlanName')]",
       "location": "[parameters('location')]",
       "sku": {
-        "name": "Y1",
-        "tier": "Dynamic",
-        "size": "Y1",
-        "family": "Y"
+        "tier": "ElasticPremium",
+        "name": "EP1",
+        "size": "EP1",
+        "family": "EP"
       },
+      "kind": "elastic",
       "properties": {
-        "computeMode": "Dynamic"
+        "maximumElasticWorkerCount": 20,
+        "reserved": false
       }
     },
     {
