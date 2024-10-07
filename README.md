@@ -87,7 +87,10 @@ Executed 'SQLTriggerFunction' (Succeeded, Id=f01bc3e5-1ee4-4120-a9a7-df924220371
 
 
 5. Optional: note down the ids of one of the records that were added, and then run the following Function to check the record with the specified id in the SQL table:
+
+```
 https://<YourFunctionAppName.azurewebsites.net>.azurewebsites.net/api/ReadItemFromSQL?Id=<replace with record id>&code=<function auth code>
+```
 
 > Note: The Id parameter is case-sensitive.
 
