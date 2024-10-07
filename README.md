@@ -50,18 +50,18 @@ GO
 
 ## Demo
 
-1. Add an item to the table by running the following Function in your browser (replace <YourFunctionAppName> with your Function App name):
+1. Add an item to the table by running the following Function in your browser (replace <YourFunctionAppName> with the host you are running the code in and replace <function auth code> with your Function's auth key. If running locally, you can remove the &code=<function auth code> part ):
 
 ```
-https://<YourFunctionAppName>.azurewebsites.net/api/WriteToSQL?title=mytitle1
+https://<YourFunctionAppName.azurewebsites.net>/api/WriteToSQL?title=mytitle1&code=<function auth code>
 ```
 
 Adding the record should trigger SQLTriggerFunction, which we will verify in the logs later.
 
-2. Run the following Function in your browser (replace <YourFunctionAppName> with your Function App name):
+2. Run the following Function in your browser (replace the variable parts of the url):
 
 ```
-https://<YourFunctionAppName>.azurewebsites.net/api/ReadAllFromSQL
+https://<YourFunctionAppName.azurewebsites.net>/api/ReadAllFromSQL&code=<function auth code>
 ```
 
 This should return a json response containing information about the added record(s), which will verify that the record(s) was/were added to the SQL table.
@@ -87,10 +87,12 @@ Executed 'SQLTriggerFunction' (Succeeded, Id=f01bc3e5-1ee4-4120-a9a7-df924220371
 
 
 5. Optional: note down the ids of one of the records that were added, and then run the following Function to check the record with the specified id in the SQL table:
-https://<YourFunctionAppName>.azurewebsites.net/api/WriteToSQL?id=<replace with record id>
+https://<YourFunctionAppName.azurewebsites.net>.azurewebsites.net/api/ReadItemFromSQL?Id=<replace with record id>&code=<function auth code>
+
+> Note: The Id parameter is case-sensitive.
 
 6. Optional: to remove all records from the table and restart with an empty table, run the folowing Function:
 
 ```
-https://<YourFunctionAppName>.azurewebsites.net/api/DeleteAllFromSQL
+https://<YourFunctionAppName.azurewebsites.net>/api/DeleteAllFromSQL&code=<function auth code>
 ```
